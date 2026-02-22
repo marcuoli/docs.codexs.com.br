@@ -1,0 +1,15 @@
+<footer class="border-t border-lt-border dark:border-gh-border bg-lt-bg-secondary dark:bg-gh-canvas mt-auto">
+  <div class="max-w-7xl mx-auto px-4 lg:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="flex items-center gap-2 text-sm text-lt-text-muted dark:text-gh-muted">
+      <img src="{{ "images/logo-horizontal-light.png" | relURL }}" alt="Codexs" class="h-5 dark:hidden opacity-60" />
+      <img src="{{ "images/logo-horizontal-dark.png" | relURL }}" alt="Codexs" class="h-5 hidden dark:block opacity-60" />
+      <span>© {{ now.Year }} Codexs. Documentation.</span>
+    </div>
+    <div class="flex items-center gap-4 text-sm text-lt-text-muted dark:text-gh-muted">
+      <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener noreferrer"
+         class="hover:text-lt-text dark:hover:text-gh-light transition-colors">GitHub</a>
+      <a href="{{ "/" | relURL }}"
+         class="hover:text-lt-text dark:hover:text-gh-light transition-colors">Docs Home</a>
+    </div>
+  </div>
+</footer>

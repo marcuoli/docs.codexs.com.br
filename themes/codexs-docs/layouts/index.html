@@ -1,0 +1,77 @@
+{{ define "main" }}
+
+<!-- Hero section -->
+<div class="bg-lt-bg dark:bg-gh-canvas border-b border-lt-border dark:border-gh-border">
+  <div class="max-w-5xl mx-auto px-6 py-16 lg:py-20 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-lt-bg-secondary dark:bg-gh-canvas-subtle border border-lt-border dark:border-gh-border text-lt-text-muted dark:text-gh-muted mb-6">
+      Documentation Hub
+    </div>
+    <h1 class="text-4xl lg:text-5xl font-bold text-lt-text dark:text-gh-light mb-4">
+      Codexs Docs
+    </h1>
+    <p class="text-lg text-lt-text-muted dark:text-gh-muted max-w-2xl mx-auto">
+      Documentation, guides and references for all Codexs tools and projects.
+    </p>
+  </div>
+</div>
+
+<!-- Tools grid -->
+<div class="max-w-5xl mx-auto px-6 py-12 lg:py-16">
+  <h2 class="text-xs font-semibold tracking-wider uppercase text-lt-text-muted dark:text-gh-muted mb-6">
+    Available documentation
+  </h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {{ range .Site.Params.tools }}
+    <a href="{{ printf "/%s/" .slug | relURL }}"
+       class="group block p-6 rounded-xl border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas hover:border-gh-primary dark:hover:border-gh-accent hover:shadow-md transition-all">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-lt-bg-secondary dark:bg-gh-canvas-subtle border border-lt-border dark:border-gh-border group-hover:border-gh-primary dark:group-hover:border-gh-accent transition-colors">
+          <!-- DNS icon -->
+          {{ if eq .icon "dns" }}
+          <svg class="w-5 h-5 text-gh-primary dark:text-gh-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+          </svg>
+          {{ else }}
+          <svg class="w-5 h-5 text-gh-primary dark:text-gh-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          {{ end }}
+        </div>
+        <svg class="w-4 h-4 mt-1 text-lt-text-muted dark:text-gh-muted group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </div>
+      <h3 class="font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors mb-1">
+        {{ .name }}
+      </h3>
+      <p class="text-sm text-lt-text-muted dark:text-gh-muted mb-3">
+        {{ .description }}
+      </p>
+      {{ if .badge }}
+      <div class="flex flex-wrap gap-1">
+        {{ range (split .badge "·") }}
+        <span class="px-2 py-0.5 text-xs rounded-full bg-lt-bg-secondary dark:bg-gh-canvas-subtle border border-lt-border dark:border-gh-border text-lt-text-muted dark:text-gh-muted">
+          {{ . | trim " " }}
+        </span>
+        {{ end }}
+      </div>
+      {{ end }}
+    </a>
+    {{ end }}
+
+    <!-- "More coming soon" placeholder -->
+    <div class="flex items-center justify-center p-6 rounded-xl border border-dashed border-lt-border dark:border-gh-border text-center">
+      <div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-lt-bg-secondary dark:bg-gh-canvas-subtle border border-lt-border dark:border-gh-border mx-auto mb-3">
+          <svg class="w-5 h-5 text-lt-text-muted dark:text-gh-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <p class="text-sm text-lt-text-muted dark:text-gh-muted">More tools coming soon</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ end }}

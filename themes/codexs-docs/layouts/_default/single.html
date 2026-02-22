@@ -1,0 +1,77 @@
+{{ define "main" }}
+<div class="flex gap-0 w-full">
+
+  <!-- Doc content -->
+  <article class="flex-1 min-w-0 px-6 py-8 lg:px-10 lg:py-10 max-w-4xl">
+
+    <!-- Breadcrumbs -->
+    {{ if .Section }}
+    {{ $sectionPage := site.GetPage .Section }}
+    <nav class="flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted mb-6" aria-label="Breadcrumb">
+      <a href="{{ "/" | relURL }}" class="hover:text-lt-text dark:hover:text-gh-light transition-colors">Docs</a>
+      <span>/</span>
+      {{ if $sectionPage }}
+      <a href="{{ $sectionPage.RelPermalink }}" class="hover:text-lt-text dark:hover:text-gh-light transition-colors capitalize">{{ $sectionPage.Title }}</a>
+      {{ if .Parent }}{{ if ne .Parent.RelPermalink $sectionPage.RelPermalink }}
+      <span>/</span>
+      <a href="{{ .Parent.RelPermalink }}" class="hover:text-lt-text dark:hover:text-gh-light transition-colors">{{ .Parent.Title }}</a>
+      {{ end }}{{ end }}
+      {{ end }}
+      <span>/</span>
+      <span class="text-lt-text dark:text-gh-light">{{ .Title }}</span>
+    </nav>
+    {{ end }}
+
+    <!-- Page content -->
+    <div class="docs-prose">
+      {{ .Content }}
+    </div>
+
+    <!-- Prev / Next navigation -->
+    {{ if or .PrevInSection .NextInSection }}
+    <div class="mt-12 pt-6 border-t border-lt-border dark:border-gh-border flex flex-col sm:flex-row gap-3 justify-between">
+      {{ with .PrevInSection }}
+      <a href="{{ .RelPermalink }}"
+         class="flex-1 flex items-center gap-3 p-4 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas hover:border-gh-primary dark:hover:border-gh-accent transition-colors group">
+        <svg class="w-5 h-5 shrink-0 text-lt-text-muted dark:text-gh-muted group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <div>
+          <div class="text-xs text-lt-text-muted dark:text-gh-muted mb-0.5">Previous</div>
+          <div class="text-sm font-medium text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">{{ .Title }}</div>
+        </div>
+      </a>
+      {{ end }}
+      {{ with .NextInSection }}
+      <a href="{{ .RelPermalink }}"
+         class="flex-1 flex items-center justify-end gap-3 p-4 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas hover:border-gh-primary dark:hover:border-gh-accent transition-colors group text-right">
+        <div>
+          <div class="text-xs text-lt-text-muted dark:text-gh-muted mb-0.5">Next</div>
+          <div class="text-sm font-medium text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">{{ .Title }}</div>
+        </div>
+        <svg class="w-5 h-5 shrink-0 text-lt-text-muted dark:text-gh-muted group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+  </article>
+
+  <!-- Table of Contents (desktop only) -->
+  {{ if .TableOfContents }}
+  <aside class="hidden xl:block w-56 shrink-0 py-8 pr-6">
+    <div class="sticky top-24">
+      <div class="text-xs font-semibold tracking-wider uppercase text-lt-text-muted dark:text-gh-muted mb-3">
+        On this page
+      </div>
+      <div class="docs-toc">
+        {{ .TableOfContents }}
+      </div>
+    </div>
+  </aside>
+  {{ end }}
+
+</div>
+{{ end }}

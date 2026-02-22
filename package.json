@@ -1,0 +1,21 @@
+{
+  "name": "codexs-docs",
+  "version": "1.0.0",
+  "description": "Codexs documentation site",
+  "scripts": {
+    "css": "npx @tailwindcss/cli -i css/input.css -o static/css/styles.min.css --minify",
+    "css:watch": "npx @tailwindcss/cli -i css/input.css -o static/css/styles.min.css --watch",
+    "hugo:server": "hugo server --buildDrafts --disableFastRender",
+    "serve": "concurrently \"npm run css:watch\" \"npm run hugo:server\"",
+    "build": "npm run css && hugo --minify --gc",
+    "clean": "rm -rf public resources static/css/styles.min.css"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.0",
+    "tailwindcss": "^4.2.0",
+    "concurrently": "^9.0.0"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.8"
+  }
+}

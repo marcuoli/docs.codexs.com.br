@@ -1,0 +1,133 @@
+<nav x-data="themeState()" class="sticky top-0 z-50 h-16 flex items-center border-b bg-lt-bg dark:bg-gh-canvas border-lt-border dark:border-gh-border shadow-sm">
+  <div class="flex items-center justify-between w-full px-4 lg:px-6">
+
+    <!-- Left: hamburger (mobile) + logo -->
+    <div class="flex items-center gap-3">
+      <!-- Mobile sidebar toggle -->
+      <button @click="$dispatch('toggle-sidebar')"
+              class="lg:hidden p-2 rounded-md text-lt-text-muted dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle transition-colors"
+              aria-label="Toggle sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Logo -->
+      <a href="{{ "/" | relURL }}" class="flex items-center gap-2 shrink-0">
+        <img src="{{ "images/logo-horizontal-light.png" | relURL }}" alt="Codexs Docs" class="h-8 dark:hidden" />
+        <img src="{{ "images/logo-horizontal-dark.png" | relURL }}" alt="Codexs Docs" class="h-8 hidden dark:block" />
+      </a>
+    </div>
+
+    <!-- Centre: tool navigation links -->
+    <div class="hidden md:flex items-center gap-1">
+      {{ range .Site.Menus.main }}
+        {{ $isActive := false }}
+        {{ if $.Section }}
+          {{ $isActive = eq $.Section (index .Params "slug" | default "") }}
+        {{ end }}
+        <a href="{{ .URL | relURL }}"
+           class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors
+                  {{ if $isActive }}
+                    bg-gh-primary text-white
+                  {{ else }}
+                    text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light
+                  {{ end }}">
+          {{ .Name }}
+        </a>
+      {{ end }}
+    </div>
+
+    <!-- Right: GitHub link + theme toggle -->
+    <div class="flex items-center gap-2">
+
+      <!-- GitHub -->
+      <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener noreferrer"
+         class="hidden sm:flex p-2 rounded-md text-lt-text-muted dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light transition-colors"
+         aria-label="GitHub">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+
+      <!-- Theme toggle dropdown -->
+      <div class="relative" x-data="{ open: false }" @keydown.escape="open = false">
+        <button @click="open = !open"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm text-lt-text-muted dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light transition-colors border border-transparent hover:border-lt-border dark:hover:border-gh-border"
+                aria-label="Toggle theme">
+          <!-- Sun icon (light) -->
+          <svg x-show="$data.theme === 'light'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+          <!-- Moon icon (dark) -->
+          <svg x-show="$data.theme === 'dark'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+          <!-- Monitor icon (system) -->
+          <svg x-show="$data.theme !== 'light' && $data.theme !== 'dark'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          <svg class="w-3 h-3 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div x-show="open" x-cloak @click.outside="open = false"
+             x-transition:enter="transition ease-out duration-100"
+             x-transition:enter-start="transform opacity-0 scale-95"
+             x-transition:enter-end="transform opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-75"
+             x-transition:leave-start="transform opacity-100 scale-100"
+             x-transition:leave-end="transform opacity-0 scale-95"
+             class="absolute right-0 mt-2 w-40 rounded-lg border shadow-lg bg-lt-bg dark:bg-gh-canvas border-lt-border dark:border-gh-border py-1 z-50">
+          <button @click="setPreference('system'); open = false"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors"
+                  :class="preference === 'system' ? 'text-gh-primary dark:text-gh-accent font-medium' : 'text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            System
+          </button>
+          <button @click="setPreference('light'); open = false"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors"
+                  :class="preference === 'light' ? 'text-gh-primary dark:text-gh-accent font-medium' : 'text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
+            Light
+          </button>
+          <button @click="setPreference('dark'); open = false"
+                  class="w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors"
+                  :class="preference === 'dark' ? 'text-gh-primary dark:text-gh-accent font-medium' : 'text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            Dark
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile: tool nav pills -->
+      <div class="md:hidden relative" x-data="{ mobileMenuOpen: false }" @keydown.escape="mobileMenuOpen = false">
+        <button @click="mobileMenuOpen = !mobileMenuOpen"
+                class="p-2 rounded-md text-lt-text-muted dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle transition-colors"
+                aria-label="Open menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+          </svg>
+        </button>
+        <div x-show="mobileMenuOpen" x-cloak @click.outside="mobileMenuOpen = false"
+             class="absolute right-0 mt-2 w-48 rounded-lg border shadow-lg bg-lt-bg dark:bg-gh-canvas border-lt-border dark:border-gh-border py-1 z-50">
+          {{ range .Site.Menus.main }}
+          <a href="{{ .URL | relURL }}"
+             class="block px-4 py-2 text-sm text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle">
+            {{ .Name }}
+          </a>
+          {{ end }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>

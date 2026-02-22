@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode | default "en" }}" x-data="themeState()" x-init="init()">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body class="bg-lt-bg-secondary dark:bg-gh-canvas-default text-lt-text dark:text-gh-light min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  {{ partial "navbar.html" . }}
+
+  <!-- Mobile sidebar overlay -->
+  <div x-data="{ sidebarOpen: false }"
+       @toggle-sidebar.window="sidebarOpen = !sidebarOpen"
+       class="flex flex-1 overflow-hidden relative">
+
+    <!-- Mobile sidebar backdrop -->
+    <div x-show="sidebarOpen" x-cloak
+         @click="sidebarOpen = false"
+         class="fixed inset-0 z-30 bg-black/40 lg:hidden"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+    </div>
+
+    <!-- Sidebar -->
+    {{ if .Section }}
+    <aside class="fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 border-r bg-lt-bg dark:bg-gh-canvas border-lt-border dark:border-gh-border
+                  transform transition-transform duration-200 ease-in-out
+                  lg:sticky lg:translate-x-0 lg:flex lg:flex-col lg:shrink-0"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+      {{ partial "sidebar.html" . }}
+    </aside>
+    {{ end }}
+
+    <!-- Main content area -->
+    <main class="flex-1 min-w-0 overflow-y-auto">
+      {{ block "main" . }}{{ end }}
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  {{ partial "footer.html" . }}
+
+</body>
+</html>

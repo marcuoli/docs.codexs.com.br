@@ -1,0 +1,54 @@
+{{/* Sidebar partial — renders only when inside a tool section */}}
+{{ $section := "" }}
+{{ if not .IsHome }}
+  {{ if .Section }}
+    {{ $section = .Section }}
+  {{ end }}
+{{ end }}
+
+{{ if $section }}
+{{ $sectionPage := site.GetPage $section }}
+{{ if $sectionPage }}
+<nav class="docs-sidebar flex flex-col gap-1 py-4 overflow-y-auto h-full" aria-label="Documentation navigation">
+  <!-- Section title / back to section -->
+  <div class="px-3 mb-2">
+    <a href="{{ $sectionPage.RelPermalink }}"
+       class="flex items-center gap-2 text-sm font-semibold text-lt-text dark:text-gh-light hover:text-gh-primary dark:hover:text-gh-accent transition-colors">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+      </svg>
+      {{ $sectionPage.Title }}
+    </a>
+  </div>
+
+  <div class="border-t border-lt-border dark:border-gh-border mx-3 mb-3"></div>
+
+  {{/* Iterate top-level pages in the section */}}
+  {{ range $sectionPage.Pages.ByWeight }}
+    {{ $page := . }}
+    {{ if .IsSection }}
+      {{/* Section group with children */}}
+      <div class="px-3 mt-2 mb-1">
+        <span class="text-xs font-semibold tracking-wider uppercase text-lt-text-muted dark:text-gh-muted">
+          {{ .Title }}
+        </span>
+      </div>
+      {{ range .Pages.ByWeight }}
+        {{ $isActive := eq $.RelPermalink .RelPermalink }}
+        <a href="{{ .RelPermalink }}"
+           class="mx-2 px-3 py-1.5 rounded-md text-sm transition-colors {{ if $isActive }}bg-gh-primary text-white font-medium{{ else }}text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light{{ end }}">
+          {{ .Title }}
+        </a>
+      {{ end }}
+    {{ else }}
+      {{/* Regular page */}}
+      {{ $isActive := eq $.RelPermalink $page.RelPermalink }}
+      <a href="{{ $page.RelPermalink }}"
+         class="mx-2 px-3 py-1.5 rounded-md text-sm transition-colors {{ if $isActive }}bg-gh-primary text-white font-medium{{ else }}text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light{{ end }}">
+        {{ $page.Title }}
+      </a>
+    {{ end }}
+  {{ end }}
+</nav>
+{{ end }}
+{{ end }}

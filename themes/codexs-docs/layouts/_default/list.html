@@ -1,0 +1,81 @@
+{{ define "main" }}
+<div class="px-6 py-8 lg:px-10 lg:py-10 max-w-5xl">
+
+  <!-- Section header -->
+  <div class="mb-8">
+    {{ if .Section }}
+    <nav class="flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted mb-4" aria-label="Breadcrumb">
+      <a href="{{ "/" | relURL }}" class="hover:text-lt-text dark:hover:text-gh-light transition-colors">Docs</a>
+      <span>/</span>
+      <span class="text-lt-text dark:text-gh-light capitalize">{{ .Title }}</span>
+    </nav>
+    {{ end }}
+    <h1 class="text-3xl font-bold text-lt-text dark:text-gh-light mb-2">{{ .Title }}</h1>
+    {{ if .Description }}
+    <p class="text-lt-text-muted dark:text-gh-muted text-base">{{ .Description }}</p>
+    {{ end }}
+  </div>
+
+  <!-- Section intro content (from _index.md) -->
+  {{ if .Content }}
+  <div class="docs-prose mb-10">
+    {{ .Content }}
+  </div>
+  {{ end }}
+
+  <!-- Child pages grid -->
+  {{ if .Pages }}
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    {{ range .Pages.ByWeight }}
+    {{ if not .IsSection }}
+    <a href="{{ .RelPermalink }}"
+       class="group block p-5 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas hover:border-gh-primary dark:hover:border-gh-accent transition-all hover:shadow-sm">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-base font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors mb-1">
+            {{ .Title }}
+          </h2>
+          {{ if .Description }}
+          <p class="text-sm text-lt-text-muted dark:text-gh-muted line-clamp-2">{{ .Description }}</p>
+          {{ else if .Summary }}
+          <p class="text-sm text-lt-text-muted dark:text-gh-muted line-clamp-2">{{ .Summary }}</p>
+          {{ end }}
+        </div>
+        <svg class="w-4 h-4 shrink-0 mt-0.5 text-lt-text-muted dark:text-gh-muted group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+    {{ end }}
+    {{ end }}
+
+    <!-- Sub-sections -->
+    {{ range .Sections.ByWeight }}
+    <a href="{{ .RelPermalink }}"
+       class="group block p-5 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas hover:border-gh-primary dark:hover:border-gh-accent transition-all hover:shadow-sm">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <svg class="w-4 h-4 shrink-0 text-gh-primary dark:text-gh-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            </svg>
+            <h2 class="text-base font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">
+              {{ .Title }}
+            </h2>
+          </div>
+          {{ if .Description }}
+          <p class="text-sm text-lt-text-muted dark:text-gh-muted line-clamp-2">{{ .Description }}</p>
+          {{ end }}
+          <p class="text-xs text-lt-text-muted dark:text-gh-muted mt-1">{{ len .Pages }} {{ if eq (len .Pages) 1 }}page{{ else }}pages{{ end }}</p>
+        </div>
+        <svg class="w-4 h-4 shrink-0 mt-0.5 text-lt-text-muted dark:text-gh-muted group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
+
+</div>
+{{ end }}
