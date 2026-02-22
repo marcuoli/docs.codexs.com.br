@@ -1,12 +1,276 @@
 ---
-title: "Installation Guide"
-description: "Install CodexDNS OS on bare metal, VM, or container."
+title: "Package Installation"
+description: "Install CodexDNS on Linux using native packages (APK, RPM, DEB)."
 weight: 10
 ---
 
-# CodexDNS OS - Installation Guide
+# Package Installation
 
-Complete installation guide for CodexDNS Appliance OS - a hardened network appliance operating system based on Alpine Linux.
+CodexDNS ships as native Linux packages for Alpine, RPM-based, and Debian-based systems. This is the recommended installation method for bare-metal servers, VMs, and cloud instances.
+
+---
+
+## System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **CPU** | x86_64, 1 core | 2+ cores |
+| **RAM** | 256 MB | 1 GB+ |
+| **Disk** | 200 MB | 2 GB+ (for logs and DB) |
+| **Network** | 1× Ethernet | 1× Ethernet |
+
+### Supported Distributions
+
+| Package | Distributions |
+|---------|---------------|
+| **APK** | Alpine Linux 3.18+ |
+| **RPM** | RHEL / CentOS / Oracle Linux / Fedora |
+| **DEB** | Debian 11+, Ubuntu 22.04+ |
+
+---
+
+## Installation
+
+### Alpine Linux (APK)
+
+```bash
+# Download the latest APK from GitHub Releases
+LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
+  | grep '"tag_name"' | cut -d'"' -f4)
+
+curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns_${LATEST#v}_x86_64.apk"
+
+# Install
+apk add --allow-untrusted codexdns_*.apk
+```
+
+### RHEL / Oracle Linux / CentOS / Fedora (RPM)
+
+```bash
+# Download
+LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
+  | grep '"tag_name"' | cut -d'"' -f4)
+
+curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns-${LATEST#v}-1.x86_64.rpm"
+
+# Install
+dnf install -y ./codexdns-*.x86_64.rpm
+```
+
+### Debian / Ubuntu (DEB)
+
+```bash
+# Download
+LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
+  | grep '"tag_name"' | cut -d'"' -f4)
+
+curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns_${LATEST#v}_amd64.deb"
+
+# Install
+apt install -y ./codexdns_*_amd64.deb
+```
+
+---
+
+## What Gets Installed
+
+| Path | Contents |
+|------|----------|
+| `/usr/bin/codexdns` | Application binary |
+| `/etc/codexdns/config.json` | Default configuration file |
+| `/var/lib/codexdns/` | Database and data directory |
+| `/var/log/codexdns/` | Log files |
+| `/etc/init.d/codexdns` | Service script (Alpine / OpenRC) |
+| `/lib/systemd/system/codexdns.service` | systemd unit (RPM / DEB) |
+
+---
+
+## Starting the Service
+
+### Alpine (OpenRC)
+
+```bash
+# Enable and start
+rc-update add codexdns default
+rc-service codexdns start
+
+# Check status
+rc-service codexdns status
+
+# View logs
+tail -f /var/log/codexdns/http.log
+```
+
+### RHEL / Debian / Ubuntu (systemd)
+
+```bash
+# Enable and start
+systemctl enable --now codexdns
+
+# Check status
+systemctl status codexdns
+
+# View logs
+journalctl -u codexdns -f
+```
+
+---
+
+## Configuration
+
+The default configuration file is at `/etc/codexdns/config.json`. Edit it before or after starting the service.
+
+```json
+{
+  "http_port": 8080,
+  "dns_port": 53,
+  "db_driver": "sqlite",
+  "db_dsn": "/var/lib/codexdns/codexdns.db",
+  "redis_addr": "",
+  "log_level": "info",
+  "log_http": "/var/log/codexdns/http.log",
+  "log_dns": "/var/log/codexdns/dns.log",
+  "log_dhcp": "/var/log/codexdns/dhcp.log"
+}
+```
+
+After editing, restart the service:
+
+```bash
+# Alpine
+rc-service codexdns restart
+
+# systemd
+systemctl restart codexdns
+```
+
+### DNS Port Binding
+
+Port 53 requires elevated privileges. The package installer handles this automatically. If you need a non-privileged port for testing, set `dns_port` to `5353` or higher in the config.
+
+---
+
+## Firewall Rules
+
+Open the required ports on your host firewall:
+
+```bash
+# firewalld (RPM-based distros)
+firewall-cmd --permanent --add-service=dns
+firewall-cmd --permanent --add-port=8080/tcp
+firewall-cmd --reload
+
+# ufw (Debian / Ubuntu)
+ufw allow 53/udp
+ufw allow 53/tcp
+ufw allow 8080/tcp
+```
+
+---
+
+## First Login
+
+Once the service is running, open the web UI:
+
+```
+http://<server-ip>:8080/
+```
+
+Default credentials:
+
+| Field | Value |
+|-------|-------|
+| **Username** | `admin` |
+| **Password** | `admin123` |
+
+> ⚠️ **Change the admin password immediately** after first login via **Settings → Profile**.
+
+---
+
+## Upgrading
+
+Download the new package and re-install — the package manager handles upgrades in place.
+
+```bash
+# APK
+apk add --allow-untrusted codexdns_<new-version>_x86_64.apk
+
+# RPM
+dnf upgrade -y ./codexdns-<new-version>-1.x86_64.rpm
+
+# DEB
+apt install -y ./codexdns_<new-version>_amd64.deb
+```
+
+Restart the service after upgrading:
+
+```bash
+rc-service codexdns restart     # Alpine
+systemctl restart codexdns      # systemd
+```
+
+---
+
+## Uninstalling
+
+```bash
+# Alpine
+apk del codexdns
+
+# RPM
+dnf remove codexdns
+
+# Debian / Ubuntu
+apt remove codexdns
+```
+
+Data and config files under `/var/lib/codexdns/` and `/etc/codexdns/` are preserved on removal. To fully purge:
+
+```bash
+# Debian / Ubuntu
+apt purge codexdns
+
+# Manual cleanup (all distros)
+rm -rf /var/lib/codexdns /etc/codexdns /var/log/codexdns
+```
+
+---
+
+## Troubleshooting
+
+### Service fails to start
+
+```bash
+# View detailed logs
+journalctl -u codexdns --no-pager -n 50   # systemd
+cat /var/log/codexdns/http.log             # all distros
+```
+
+### Port 53 already in use
+
+```bash
+# Find what is using port 53
+ss -tulnp | grep :53
+
+# Common culprit on Ubuntu — systemd-resolved
+systemctl disable --now systemd-resolved
+
+# Or use a non-privileged port for testing
+# Set dns_port to 5353 in /etc/codexdns/config.json
+```
+
+### Cannot reach web UI
+
+```bash
+# Check the process is running
+ps aux | grep codexdns
+
+# Verify http_port matches what you're browsing to
+grep http_port /etc/codexdns/config.json
+
+# Check firewall
+iptables -L INPUT -n | grep 8080
+```
 
 ## Table of Contents
 
