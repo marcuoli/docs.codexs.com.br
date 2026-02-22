@@ -181,7 +181,33 @@ Default credentials:
 | Field | Value |
 |-------|-------|
 | **Username** | `admin` |
-| **Password** | `admin123` |
+| **Password** | Printed in startup log (auto-generated) |
+
+On first run, CodexDNS generates a random 24-character password and prints it to the log:
+
+```
+************************************************************
+* CODEXDNS FIRST-BOOT: no CODEXDNS_ADMIN_PASSWORD set.     *
+* A temporary admin password has been generated:            *
+*   Username : admin                                         *
+*   Password : <generated-password>                         *
+* You MUST change this password immediately after login.     *
+************************************************************
+```
+
+To set a fixed password instead, export the env var **before** the first run:
+
+```bash
+# systemd override
+systemctl edit codexdns
+# Add:
+[Service]
+Environment="CODEXDNS_ADMIN_PASSWORD=your-strong-password"
+
+# Or export directly (for manual/test runs)
+export CODEXDNS_ADMIN_PASSWORD=your-strong-password
+codexdns -config /etc/codexdns/config.json
+```
 
 > ⚠️ **Change the admin password immediately** after first login via **Settings → Profile**.
 
