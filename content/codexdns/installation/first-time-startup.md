@@ -52,21 +52,27 @@ weight: 20
 ```
 Username: admin
 Email:    admin@codexdns.local
-Password: admin123
+Password: see startup log (auto-generated) or CODEXDNS_ADMIN_PASSWORD env var
 Profile:  Administrator (full permissions)
 ```
 
+**Password behavior**:
+- If the `CODEXDNS_ADMIN_PASSWORD` environment variable is set, its value is used and `MustChangePassword` is **not** set.
+- Otherwise, a **24-character random password** is generated, printed prominently to the startup log, and the account is flagged `MustChangePassword=true` — you will be forced to set a new password on first login.
+
 **Security notes**:
-- ⚠️ **CHANGE THE PASSWORD IMMEDIATELY** after first login
 - Password is bcrypt-hashed before storage (never stored in plaintext)
-- Only created if database is completely empty (no users)
+- Only created if the database is completely empty (no users)
+- The generated password is printed **once** at startup — save it before the log scrolls
 
 **First login flow**:
-1. Navigate to `http://localhost:8080` (or configured HTTP port)
-2. Log in with `admin` / `admin123`
-3. Go to Settings → Users → Edit admin user
-4. Update password and email
-5. Optionally enable 2FA for additional security
+1. Find the generated password in the startup log (look for the `****` banner)
+   — or set `CODEXDNS_ADMIN_PASSWORD=<yourpassword>` before first run
+2. Navigate to `http://localhost:8080` (or configured HTTP port)
+3. Log in with `admin` and the password from step 1
+4. If using the auto-generated password, you will be prompted to set a new one immediately
+5. Update the admin email under Settings → Profile
+6. Optionally enable 2FA for additional security
 
 ---
 
@@ -196,7 +202,8 @@ certSvc.ScanAndImportCertificates("./certs", "system")
 ┌─────────────────────────────────────────────────────────────┐
 │ 4. Seed Admin User (if no users exist)                     │
 │    - Username: admin                                        │
-│    - Password: admin123 (bcrypt hashed)                     │
+│    - Password: auto-generated (printed to log) or           │
+│      CODEXDNS_ADMIN_PASSWORD env var (bcrypt hashed)        │
 │    EXIT on failure ❌                                        │
 └─────────────────────────────────────────────────────────────┘
                             │
@@ -262,7 +269,7 @@ certSvc.ScanAndImportCertificates("./certs", "system")
 │ 12. Application Ready                                       │
 │     - HTTP UI: http://localhost:8080                        │
 │     - DNS Server: udp://0.0.0.0:53                          │
-│     - Admin Login: admin / admin123                         │
+│     - Admin Login: admin / <see startup log>                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -274,7 +281,7 @@ After first-time startup, the following features are **fully functional** withou
 
 ### ✅ HTTP Web Interface
 - **URL**: `http://localhost:8080`
-- **Login**: `admin` / `admin123`
+- **Login**: `admin` / password from startup log (or `CODEXDNS_ADMIN_PASSWORD` if set)
 - Full management UI available:
   - Dashboard with DNS statistics
   - Zone and record management
@@ -394,7 +401,7 @@ The application will **log a warning** and continue if:
 After first-time startup, complete these steps:
 
 ### 🔒 Security (Immediate)
-- [ ] Change admin password from `admin123`
+- [ ] Change admin password (auto-generated — check the startup log for the temporary password)
 - [ ] Update admin email from `admin@codexdns.local`
 - [ ] Enable 2FA for admin account (recommended)
 - [ ] Review and restrict admin permissions if multiple admins
@@ -666,4 +673,4 @@ CodexDNS is designed for **effortless first-time startup**:
 **Services ready**: HTTP UI, DNS server, client tracking, filtering  
 **Optional setup**: HTTPS, DoH, DoT, DHCP integration  
 
-Start the application and log in at `http://localhost:8080` with `admin` / `admin123`. 🚀
+Start the application, find the generated admin password in the startup log, and log in at `http://localhost:8080`. 🚀

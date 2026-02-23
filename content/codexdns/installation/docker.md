@@ -1,333 +1,292 @@
 ---
-title: "Docker Deployment"
+title: "Docker"
 description: "Run CodexDNS using Docker or Docker Compose."
 weight: 30
 ---
 
-# Docker Deployment Testing Guide
+# Docker Deployment
 
-This document describes the Docker deployment testing infrastructure for CodexDNS.
+CodexDNS is available as a Docker image on the GitHub Container Registry. This is the fastest way to get started on any platform that runs Docker.
 
-## Overview
+---
 
-CodexDNS includes comprehensive testing for Docker deployments to ensure:
-- Docker images build correctly
-- Containers start and run successfully
-- Database migrations execute properly in containerized environments
-- Web UI and APIs are accessible
-- Static assets are served correctly
-- Health checks function as expected
-- Volume persistence works correctly
-
-## Test Categories
-
-### 1. Docker Build & Launch Tests (`test-docker-launch.sh`)
-
-Basic tests for building and running the Docker image.
-
-**Run:**
-```bash
-./scripts/test-docker-launch.sh
-```
-
-**Features:**
-- Builds Docker image from Dockerfile
-- Starts container on test port (8888)
-- Verifies service startup
-- Tests health endpoint
-- Checks static assets
-- Validates login page
-- Tests database migrations
-- Checks container health status
-
-**Options:**
-```bash
-# Skip rebuild (use existing image)
-SKIP_BUILD=1 ./scripts/test-docker-launch.sh
-
-# Verbose output
-VERBOSE=1 ./scripts/test-docker-launch.sh
-
-# Custom port
-TEST_PORT=9999 ./scripts/test-docker-launch.sh
-```
-
-### 2. Docker Compose Tests (`test-docker-compose.sh`)
-
-Tests for the docker-compose.yml configuration.
-
-**Run:**
-```bash
-./scripts/test-docker-compose.sh
-```
-
-**Features:**
-- Builds and starts complete compose stack
-- Tests volume persistence
-- Validates port bindings
-- Checks environment variables
-- Tests healthcheck configuration
-- Validates resource limits
-- Tests restart policies
-- Verifies basic functionality
-
-**Options:**
-```bash
-# Keep containers running after tests
-KEEP_RUNNING=1 ./scripts/test-docker-compose.sh
-
-# Verbose output
-VERBOSE=1 ./scripts/test-docker-compose.sh
-```
-
-### 3. Playwright Docker Tests (`tests/docker-deployment.spec.ts`)
-
-Comprehensive end-to-end tests using Playwright.
-
-**Run:**
-```bash
-# Set Docker URL (default: http://localhost:8081)
-export DOCKER_TEST_URL=http://localhost:8081
-npx playwright test tests/docker-deployment.spec.ts
-```
-
-**Test Coverage:**
-- Container health check endpoint
-- Login page functionality
-- Static asset serving (CSS, JS)
-- Authentication with default credentials
-- Dashboard accessibility
-- Database migration validation
-- Configuration endpoint access
-- DNS settings page
-- Statistics pages
-- User profile management
-- Logout functionality
-- Error page handling
-- Security headers
-- Version endpoint
-- Volume persistence
-- Migration table verification
-
-### 4. Makefile Targets
-
-Quick access via Make:
+## Quick Start
 
 ```bash
-# Run Docker launch tests
-make test-docker
-
-# Build Docker image
-make docker-build
-
-# Build and push to registries
-make docker
+docker run -d \
+  --name codexdns \
+  -p 8080:8080 \
+  -p 53:53/udp \
+  -p 53:53/tcp \
+  -v codexdns-data:/app/data \
+  -v codexdns-config:/app/config \
+  -v codexdns-logs:/app/logs \
+  ghcr.io/marcuoli/codexdns:latest
 ```
 
-## GitHub Actions Integration
+Open the web UI at `http://localhost:8080` and log in.
 
-Automated testing runs on:
-- Push to main, develop, or feat/* branches
-- Pull requests to main or develop
-- Changes to Docker-related files
-- Manual workflow dispatch
+On first run, CodexDNS prints the auto-generated admin password to the container log:
 
-### Workflows
+```bash
+docker logs codexdns 2>&1 | grep -A6 'FIRST-BOOT'
+```
 
-1. **docker-build-test**: Basic Docker build and functionality
-2. **docker-compose-test**: Docker Compose stack validation
-3. **playwright-docker-tests**: Full Playwright test suite against Docker
-4. **docker-migration-test**: Migration-specific validation
+You will see a message like:
+```
+************************************************************
+* CODEXDNS FIRST-BOOT: no CODEXDNS_ADMIN_PASSWORD set.     *
+*   Username : admin                                         *
+*   Password : <generated-password>                         *
+************************************************************
+```
 
-View results: `.github/workflows/docker-tests.yml`
+> ⚠️ **Change the admin password immediately** after first login via **Settings → Profile**.
 
-## Test Requirements
+---
 
-### Prerequisites
+## Image Tags
 
-- Docker or Docker Desktop installed
-- Docker Compose V2 (built-in with Docker) or standalone docker-compose
-- curl
-- bash (for shell scripts)
-- Node.js 20+ (for Playwright tests)
-- npm (for building CSS)
+| Tag | Description |
+|-----|-------------|
+| `latest` | Latest stable release |
+| `x.y.z` | Specific version (e.g. `0.1.20260222.1`) |
+| `edge` | Latest commit on `main` (unstable) |
 
-**Note for WSL users**: The scripts automatically detect and use `docker compose` (V2, built-in) instead of the standalone `docker-compose` command to avoid permission issues with Windows executables.
+```bash
+# Pull a specific version
+docker pull ghcr.io/marcuoli/codexdns:0.1.20260222.1
+```
+
+---
+
+## Docker Compose (Recommended)
+
+Create a `docker-compose.yml`:
+
+```yaml
+services:
+  codexdns:
+    image: ghcr.io/marcuoli/codexdns:latest
+    container_name: codexdns
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # Web UI
+      - "53:53/udp"   # DNS UDP
+      - "53:53/tcp"   # DNS TCP
+    volumes:
+      - codexdns-data:/app/data
+      - codexdns-config:/app/config
+      - codexdns-logs:/app/logs
+    environment:
+      - CODEXDNS_HTTP_PORT=8080
+      - CODEXDNS_DNS_PORT=53
+      - CODEXDNS_LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "2"
+
+volumes:
+  codexdns-data:
+  codexdns-config:
+  codexdns-logs:
+```
+
+Start the stack:
+
+```bash
+docker compose up -d
+
+# Follow logs
+docker compose logs -f
+
+# Stop
+docker compose down
+```
+
+---
+
+## Volumes
+
+| Volume | Container path | Contents |
+|--------|---------------|----------|
+| `codexdns-data` | `/app/data` | SQLite database |
+| `codexdns-config` | `/app/config` | `config.json` |
+| `codexdns-logs` | `/app/logs` | HTTP, DNS, DHCP log files |
+| `codexdns-certs` | `/app/certs` | TLS certificates (optional) |
+
+You can also bind-mount a local directory instead of a named volume:
+
+```yaml
+volumes:
+  - ./data:/app/data
+  - ./config:/app/config
+  - ./logs:/app/logs
+```
+
+---
+
+## Configuration
+
+The container reads configuration from environment variables or from `/app/config/config.json` mounted via volume.
 
 ### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DOCKER_TEST_URL` | `http://localhost:8081` | URL for Playwright tests |
-| `TEST_PORT` | `8888` | Port for test containers |
-| `SKIP_BUILD` | `0` | Skip Docker build step |
-| `VERBOSE` | `0` | Enable verbose output |
-| `KEEP_RUNNING` | `0` | Keep containers after tests |
+| `CODEXDNS_ADMIN_PASSWORD` | *(auto-generated)* | Admin password on first boot. If set, used as-is and `MustChangePassword` is not set. If unset, a 24-char random password is printed to the log. |
+| `CODEXDNS_HTTP_PORT` | `8080` | Web UI port |
+| `CODEXDNS_DNS_PORT` | `53` | DNS listener port |
+| `CODEXDNS_LOG_LEVEL` | `info` | Log level (`debug`, `info`, `warn`, `error`) |
+| `CODEXDNS_DB_DRIVER` | `sqlite` | Database driver |
+| `CODEXDNS_DB_DSN` | `/app/data/codexdns.db` | Database connection string |
+| `CODEXDNS_REDIS_ADDR` | `` | Redis address (optional, e.g. `redis:6379`) |
 
-## Test Scenarios
+### Config File
 
-### Fresh Installation Test
+Mount a custom config file:
 
-Validates that a fresh Docker deployment:
-1. Builds successfully
-2. Runs database migrations (version 1)
-3. Creates default admin user
-4. Serves web UI
-5. Responds to health checks
+```bash
+# Create config directory
+mkdir -p ./config
 
-### Volume Persistence Test
+# Write config
+cat > ./config/config.json << 'EOF'
+{
+  "http_port": 8080,
+  "dns_port": 53,
+  "db_driver": "sqlite",
+  "db_dsn": "/app/data/codexdns.db",
+  "log_level": "info"
+}
+EOF
+```
 
-Verifies:
-- Database volume (`/app/data`)
-- Config volume (`/app/config`)
-- Logs volume (`/app/logs`)
-- Certificate volume (`/app/certs`)
+Then add to `docker-compose.yml`:
 
-### Migration Validation
+```yaml
+volumes:
+  - ./config:/app/config
+```
 
-Confirms:
-- Embedded migrations execute
-- Schema version is set to 1
-- All 37+ tables are created
-- Default admin credentials work
+---
 
-### Resource Limits
+## With Redis Cache
 
-Checks:
-- Memory limits (512MB max)
-- CPU limits (2 CPUs max)
-- Minimum reservations (128MB, 0.25 CPU)
+Add a Redis service to improve DNS caching performance:
 
-### Health Checks
+```yaml
+services:
+  codexdns:
+    image: ghcr.io/marcuoli/codexdns:latest
+    environment:
+      - CODEXDNS_REDIS_ADDR=redis:6379
+    depends_on:
+      - redis
+    # ... other config
 
-Tests:
-- Docker healthcheck configuration
-- `/health` endpoint response
-- Interval/timeout settings
-- Restart on failure
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+```
+
+---
+
+## DNS on Port 53 with systemd-resolved
+
+On Ubuntu and some Debian systems, `systemd-resolved` binds to port 53. You need to free it before CodexDNS can listen:
+
+```bash
+# Disable systemd-resolved stub
+sudo systemctl disable --now systemd-resolved
+sudo rm /etc/resolv.conf
+echo 'nameserver 8.8.8.8' | sudo tee /etc/resolv.conf
+```
+
+Alternatively, bind CodexDNS to a specific host interface only:
+
+```yaml
+ports:
+  - "192.168.1.10:53:53/udp"
+  - "192.168.1.10:53:53/tcp"
+```
+
+---
+
+## Health Check
+
+CodexDNS exposes a health endpoint:
+
+```bash
+curl http://localhost:8080/health
+# {"status":"ok", "version":"0.1.20260222.1"}
+```
+
+Check container health status:
+
+```bash
+docker inspect --format='{{.State.Health.Status}}' codexdns
+```
+
+---
+
+## Updating
+
+```bash
+# Pull the latest image
+docker compose pull
+
+# Recreate the container
+docker compose up -d
+```
+
+Data volumes are preserved across updates.
+
+---
 
 ## Troubleshooting
 
-### Container Won't Start
+### View logs
 
 ```bash
-# View container logs
-docker logs codexdns-test-container
+# Container stdout/stderr
+docker logs codexdns
+docker logs --tail 50 -f codexdns
 
-# Check last 50 lines
-docker logs --tail 50 codexdns-test-container
-
-# Follow logs
-docker logs -f codexdns-test-container
+# Application log files (if logs volume is mounted)
+cat ./logs/dns.log
+cat ./logs/http.log
 ```
 
-### Health Check Failing
+### Port already in use
 
 ```bash
-# Inspect health status
-docker inspect --format='{{.State.Health.Status}}' codexdns
+# Find what is using port 53
+ss -tulnp | grep :53
 
-# View health check logs
-docker inspect --format='{{range .State.Health.Log}}{{.Output}}{{end}}' codexdns
+# Find what is using port 8080
+ss -tulnp | grep :8080
 ```
 
-### Migration Issues
+### Container exits immediately
 
 ```bash
-# Check migration logs
-docker logs codexdns | grep -i migration
+# View exit reason
+docker logs codexdns
 
-# Connect to database
-docker exec -it codexdns sqlite3 /app/data/codexdns.db
-
-# Check schema version
-sqlite> SELECT * FROM schema_migrations;
+# Check config file syntax if using a config volume
+cat ./config/config.json | python3 -m json.tool
 ```
 
-### Port Conflicts
-
-```bash
-# Use custom port
-TEST_PORT=9999 ./scripts/test-docker-launch.sh
-
-# Or update docker-compose.yml port mapping
-ports:
-  - "9999:8080"  # Change host port
-```
-
-### Build Cache Issues
-
-```bash
-# Clear Docker build cache
-docker builder prune
-
-# Rebuild without cache
-docker build --no-cache -t codexdns:test -f tools/docker/Dockerfile .
-```
-
-## Best Practices
-
-1. **Run tests before pushing**: Validate Docker changes locally
-2. **Check CI results**: Review GitHub Actions after pushing
-3. **Test migrations**: Always test migration changes in Docker
-4. **Clean up volumes**: Remove test volumes after local testing
-5. **Monitor logs**: Watch container logs during development
-
-## Manual Testing
-
-### Quick Test
-
-```bash
-# Build and run
-cd tools/docker
-docker-compose up -d --build
-
-# Access UI
-open http://localhost:8081
-
-# Login with: admin / admin123
-
-# Stop
-docker-compose down -v
-```
-
-### Development Testing
-
-```bash
-# Keep running for development
-KEEP_RUNNING=1 ./scripts/test-docker-compose.sh
-
-# Make changes, rebuild
-docker-compose -f tools/docker/docker-compose.yml build
-
-# Restart service
-docker-compose -f tools/docker/docker-compose.yml restart
-
-# Cleanup when done
-docker-compose -f tools/docker/docker-compose.yml down -v
-```
-
-## Continuous Improvement
-
-Test additions should cover:
-- New configuration options
-- Additional database drivers
-- DNS/DHCP functionality
-- Multi-architecture builds
-- Security enhancements
-- Performance benchmarks
-
-## Related Documentation
-
-- [Dockerfile](../tools/docker/Dockerfile)
-- [docker-compose.yml](../tools/docker/docker-compose.yml)
-- [Migration Consolidation](./migration-consolidation-v1.md)
-- [Production Deployment](./codexdns-os-installation.md)
-
-## Support
-
-For issues or questions:
-1. Check container logs
-2. Review test output
-3. Consult GitHub Actions logs
-4. Create issue with logs attached
