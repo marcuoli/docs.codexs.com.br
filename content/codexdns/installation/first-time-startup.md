@@ -17,7 +17,7 @@ weight: 20
 **What happens**: On first run, CodexDNS automatically:
 
 1. **Creates the SQLite database file** (`codexdns.db` or path from config)
-2. **Creates all required tables** via GORM AutoMigrate
+2. **Creates all required tables** automatically
 3. **Applies indexes and constraints**
 
 **Tables created**:
@@ -149,11 +149,7 @@ The `certificates` table is automatically created during schema migration. It su
 - Certificate lifecycle tracking (uploaded, expires, revoked)
 
 #### Auto-Import on Startup (Optional)
-If enabled in config (`certificate_import_on_startup: true`):
-
-```go
-certSvc.ScanAndImportCertificates("./certs", "system")
-```
+If enabled in config (`certificate_import_on_startup: true`), CodexDNS will scan the `./certs` directory for certificate files and import them into the database on startup.
 
 **What it does**:
 1. Scans `./certs` directory for `.crt`, `.pem`, `.cert` files
@@ -192,7 +188,7 @@ certSvc.ScanAndImportCertificates("./certs", "system")
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 3. Run AutoMigrate (GORM)                                   │
+│ 3. Run Database Migrations                                 │
 │    - Creates all tables, indexes, constraints              │
 │    - Fixes legacy indexes if upgrading                      │
 │    EXIT on failure ❌                                        │
@@ -648,12 +644,7 @@ If upgrading from a previous version:
 
 4. **New features**: Check release notes for new settings/features
 
-**Note**: AutoMigrate is **additive only**. It:
-- ✅ Creates new tables
-- ✅ Adds new columns
-- ✅ Creates new indexes
-- ❌ Does NOT delete columns
-- ❌ Does NOT modify existing data
+**Note**: Schema migrations are applied automatically on startup and are additive — new tables and columns are created, but existing data is never deleted or modified.
 
 ---
 

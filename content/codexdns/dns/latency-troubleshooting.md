@@ -42,21 +42,6 @@ This document explains the upstream server latency measurement system in CodexDN
 }
 ```
 
-### Docker Configuration
-
-The Docker config (`docker/config.docker.json`) now includes these fields by default:
-
-```json
-{
-  "debug_latency": false,
-  "latency_measurement_interval": 30,
-  "log_max_size_mb": 100,
-  "log_max_backups": 10,
-  "log_max_age_days": 30,
-  "log_compress": true
-}
-```
-
 ## Troubleshooting "N/A" Latency
 
 ### Symptoms
@@ -158,75 +143,6 @@ wget -O- https://cloudflare-dns.com/dns-query
 # Test TLS connection (for DoT)
 nc -zv dns.google 853
 ```
-
-## Code Flow
-
-### Initialization (internal/dns/server.go:501)
-
-```go
-if len(cfg.UpstreamServers) > 0 {
-    forwarder = NewForwarder(cfg.UpstreamServers, cfg.UpstreamStrategy, cfg.UpstreamTimeout)
-    
-    latencyInterval := time.Duration(cfg.LatencyMeasurementInterval) * time.Second
-    if latencyInterval < 10*time.Second {
-        latencyInterval = 10 * time.Second
-    } else if latencyInterval > 300*time.Second {
-        latencyInterval = 300 * time.Second
-    }
-    
-    forwarder.StartLatencyMeasurement(latencyInterval)
-}
-```
-
-### Measurement (internal/dns/forwarder.go:1560)
-
-```go
-func (f *Forwarder) measureAllLatencies() {
-    for _, server := range f.servers {
-        latency := f.measureServerLatency(server)
-        f.trackLatency(server, latency)
-        
-        if latency > 0 {
-            statsSvc.RecordUpstreamLatency(server, latency.Microseconds())
-        } else {
-            log.Printf("[WARN] [DNS] Upstream latency measurement failed for %s (returned 0)", server)
-        }
-    }
-}
-```
-
-### Dashboard Query (internal/http/handlers/dashboard.go:380)
-
-```go
-for _, addr := range h.cfg.UpstreamServers {
-    latency := dns.GetUpstreamLatency(addr)
-    
-    latencyStr := "N/A"
-    if latency > 0 {
-        latencyStr = fmt.Sprintf("%dms", latency.Milliseconds())
-    }
-}
-```
-
-## Recent Changes (Version 0.2.20251212.2)
-
-### Enhanced Error Logging
-
-Added warning logs for failed ping attempts:
-
-1. **Per-server failures**: Logs each individual ping failure with error details
-2. **UDP fallback failures**: Logs UDP exchange failures separately
-3. **Measurement cycle summary**: Logs warning if all measurements fail
-
-These warnings are always visible (not debug-only) to help diagnose production issues.
-
-### Docker Config Improvements
-
-Added missing fields to `docker/config.docker.json`:
-
-- `debug_latency`: false
-- `latency_measurement_interval`: 30
-- Log rotation settings (max_size_mb, max_backups, max_age_days, compress)
 
 ## Best Practices
 

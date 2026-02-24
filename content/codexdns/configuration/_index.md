@@ -8,7 +8,6 @@ CodexDNS uses a hybrid configuration system: a JSON file (`config.json`) provide
 
 This section covers:
 
-- **[Configuration Architecture](architecture)** — how the JSON file, database, and environment variables interact
 - **[Runtime Configuration](runtime)** — changing settings live via the Web UI or API
 - **[Export & Import](export-import)** — backing up and restoring configuration
 - **[Configuration Parameters Reference](parameters)** — every JSON config key with its type, default value, environment variable equivalent, and description
