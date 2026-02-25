@@ -4,8 +4,6 @@ description: "Download CodexDNS packages for Linux or run with Docker."
 weight: 15
 ---
 
-# Downloads
-
 CodexDNS is available as native Linux packages (RPM, APK, DEB) and as Docker images for both Docker Hub and GHCR. Packages are provided for **x86_64 / amd64** and **ARM64 / aarch64** architectures.
 
 ---
