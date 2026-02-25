@@ -3,8 +3,10 @@
  *
  * Deploy this Worker with the route: docs.codexs.com.br/*
  *
- * It intercepts GET /codexdns/version.json requests, writes a telemetry
- * event to Analytics Engine, then transparently proxies to GitHub Pages.
+ * It intercepts GET /codexdns/version.json?v=...&os=...&arch=...&iid=... requests,
+ * writes a telemetry event to Analytics Engine, then transparently proxies to GitHub Pages.
+ * Note: the instance-ID parameter is named "iid" (not "id") to avoid Cloudflare's
+ * automatic PII redaction of query parameters named "id".
  *
  * Setup:
  *   1. Create an Analytics Engine dataset named "codexdns_update_checks" in the
@@ -31,7 +33,7 @@ export default {
       const v    = url.searchParams.get('v')    ?? 'unknown';
       const os   = url.searchParams.get('os')   ?? 'unknown';
       const arch = url.searchParams.get('arch') ?? 'unknown';
-      const id   = url.searchParams.get('id')   ?? 'unknown';
+      const id   = url.searchParams.get('iid')  ?? 'unknown';
 
       // Write telemetry event (non-blocking – no await)
       if (env.ANALYTICS) {
