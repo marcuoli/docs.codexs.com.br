@@ -45,10 +45,10 @@
           <span class="text-xs bg-lt-border dark:bg-gh-border rounded px-1.5 py-0.5 text-lt-text-muted dark:text-gh-muted">older</span>
         </div>
 
-        <!-- Download cards: up to 4 columns on desktop (el9 + optional el10 + APK + DEB) -->
+        <!-- Download cards: x86_64 / amd64 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          <!-- RPM el9 -->
+          <!-- RPM el9 x86_64 -->
           <a :href="rel.rpm.url"
              class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
              download>
@@ -70,7 +70,7 @@
             </div>
           </a>
 
-          <!-- RPM el10 (shown only when available) -->
+          <!-- RPM el10 x86_64 (shown only when available) -->
           <a x-show="rel.rpm_el10" x-cloak
              :href="rel.rpm_el10 ? rel.rpm_el10.url : '#'"
              class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
@@ -93,7 +93,7 @@
             </div>
           </a>
 
-          <!-- APK -->
+          <!-- APK x86_64 -->
           <a :href="rel.apk.url"
              class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
              download>
@@ -115,7 +115,7 @@
             </div>
           </a>
 
-          <!-- DEB -->
+          <!-- DEB amd64 -->
           <a :href="rel.deb.url"
              class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
              download>
@@ -137,6 +137,109 @@
             </div>
           </a>
 
+        </div>
+
+        <!-- ARM64 / aarch64 cards (shown only when at least one arm64 package exists) -->
+        <div x-show="rel.rpm_el9_aarch64 || rel.rpm_el10_aarch64 || rel.apk_aarch64 || rel.deb_arm64" x-cloak class="mt-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-medium text-lt-text-muted dark:text-gh-muted uppercase tracking-wider">ARM64 / aarch64</span>
+            <div class="flex-1 h-px bg-lt-border dark:bg-gh-border"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- RPM el9 aarch64 -->
+            <a x-show="rel.rpm_el9_aarch64" x-cloak
+               :href="rel.rpm_el9_aarch64 ? rel.rpm_el9_aarch64.url : '#'"
+               class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
+               download>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center w-9 h-9 rounded-md bg-red-900/20 border border-red-800/40 shrink-0">
+                  <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">.rpm <span class="text-xs font-normal opacity-70">el9</span></div>
+                  <div class="text-xs text-lt-text-muted dark:text-gh-muted">RHEL 9 · OEL 9 · aarch64</div>
+                </div>
+              </div>
+              <div class="text-xs font-mono text-lt-text-muted dark:text-gh-muted break-all" x-text="rel.rpm_el9_aarch64 ? rel.rpm_el9_aarch64.filename : ''"></div>
+              <div class="mt-auto flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="font-mono truncate" x-text="rel.rpm_el9_aarch64 ? rel.rpm_el9_aarch64.sha256.slice(0,16) + '…' : ''"></span>
+                <button @click.prevent="rel.rpm_el9_aarch64 && navigator.clipboard.writeText(rel.rpm_el9_aarch64.sha256).then(() => $el.textContent='✓').catch(()=>{})"
+                        class="ml-auto shrink-0 text-lt-text-muted dark:text-gh-muted hover:text-gh-primary dark:hover:text-gh-accent transition-colors text-xs px-1 rounded">copy</button>
+              </div>
+            </a>
+
+            <!-- RPM el10 aarch64 -->
+            <a x-show="rel.rpm_el10_aarch64" x-cloak
+               :href="rel.rpm_el10_aarch64 ? rel.rpm_el10_aarch64.url : '#'"
+               class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
+               download>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center w-9 h-9 rounded-md bg-red-900/20 border border-red-800/40 shrink-0">
+                  <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">.rpm <span class="text-xs font-normal opacity-70">el10</span></div>
+                  <div class="text-xs text-lt-text-muted dark:text-gh-muted">RHEL 10 · OEL 10 · aarch64</div>
+                </div>
+              </div>
+              <div class="text-xs font-mono text-lt-text-muted dark:text-gh-muted break-all" x-text="rel.rpm_el10_aarch64 ? rel.rpm_el10_aarch64.filename : ''"></div>
+              <div class="mt-auto flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="font-mono truncate" x-text="rel.rpm_el10_aarch64 ? rel.rpm_el10_aarch64.sha256.slice(0,16) + '…' : ''"></span>
+                <button @click.prevent="rel.rpm_el10_aarch64 && navigator.clipboard.writeText(rel.rpm_el10_aarch64.sha256).then(() => $el.textContent='✓').catch(()=>{})"
+                        class="ml-auto shrink-0 text-lt-text-muted dark:text-gh-muted hover:text-gh-primary dark:hover:text-gh-accent transition-colors text-xs px-1 rounded">copy</button>
+              </div>
+            </a>
+
+            <!-- APK aarch64 -->
+            <a x-show="rel.apk_aarch64" x-cloak
+               :href="rel.apk_aarch64 ? rel.apk_aarch64.url : '#'"
+               class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
+               download>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center w-9 h-9 rounded-md bg-blue-900/20 border border-blue-800/40 shrink-0">
+                  <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">.apk</div>
+                  <div class="text-xs text-lt-text-muted dark:text-gh-muted">Alpine Linux 3.18+ · aarch64</div>
+                </div>
+              </div>
+              <div class="text-xs font-mono text-lt-text-muted dark:text-gh-muted break-all" x-text="rel.apk_aarch64 ? rel.apk_aarch64.filename : ''"></div>
+              <div class="mt-auto flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="font-mono truncate" x-text="rel.apk_aarch64 ? rel.apk_aarch64.sha256.slice(0,16) + '…' : ''"></span>
+                <button @click.prevent="rel.apk_aarch64 && navigator.clipboard.writeText(rel.apk_aarch64.sha256).then(() => $el.textContent='✓').catch(()=>{})"
+                        class="ml-auto shrink-0 text-lt-text-muted dark:text-gh-muted hover:text-gh-primary dark:hover:text-gh-accent transition-colors text-xs px-1 rounded">copy</button>
+              </div>
+            </a>
+
+            <!-- DEB arm64 -->
+            <a x-show="rel.deb_arm64" x-cloak
+               :href="rel.deb_arm64 ? rel.deb_arm64.url : '#'"
+               class="group flex flex-col gap-3 rounded-lg border border-lt-border dark:border-gh-border bg-lt-bg dark:bg-gh-canvas p-5 hover:border-gh-primary dark:hover:border-gh-accent transition-colors no-underline"
+               download>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center w-9 h-9 rounded-md bg-orange-900/20 border border-orange-800/40 shrink-0">
+                  <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-lt-text dark:text-gh-light group-hover:text-gh-primary dark:group-hover:text-gh-accent transition-colors">.deb</div>
+                  <div class="text-xs text-lt-text-muted dark:text-gh-muted">Debian 11+ · Ubuntu 22.04+ · arm64</div>
+                </div>
+              </div>
+              <div class="text-xs font-mono text-lt-text-muted dark:text-gh-muted break-all" x-text="rel.deb_arm64 ? rel.deb_arm64.filename : ''"></div>
+              <div class="mt-auto flex items-center gap-1.5 text-xs text-lt-text-muted dark:text-gh-muted">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="font-mono truncate" x-text="rel.deb_arm64 ? rel.deb_arm64.sha256.slice(0,16) + '…' : ''"></span>
+                <button @click.prevent="rel.deb_arm64 && navigator.clipboard.writeText(rel.deb_arm64.sha256).then(() => $el.textContent='✓').catch(()=>{})"
+                        class="ml-auto shrink-0 text-lt-text-muted dark:text-gh-muted hover:text-gh-primary dark:hover:text-gh-accent transition-colors text-xs px-1 rounded">copy</button>
+              </div>
+            </a>
+
+          </div>
         </div>
       </div>
     </template>

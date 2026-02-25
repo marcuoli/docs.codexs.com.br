@@ -6,7 +6,7 @@ weight: 15
 
 # Downloads
 
-CodexDNS is available as native Linux packages (RPM, APK, DEB) and as Docker images for both Docker Hub and GHCR. All packages target **x86_64 / amd64** architecture.
+CodexDNS is available as native Linux packages (RPM, APK, DEB) and as Docker images for both Docker Hub and GHCR. Packages are provided for **x86_64 / amd64** and **ARM64 / aarch64** architectures.
 
 ---
 
@@ -21,9 +21,13 @@ CodexDNS is available as native Linux packages (RPM, APK, DEB) and as Docker ima
 | Package | Architecture | Tested Distributions |
 |---------|-------------|----------------------|
 | **RPM (el9)** | x86_64 | RHEL 9, Oracle Linux 9, CentOS Stream 9, Fedora 38+ |
+| **RPM (el9)** | aarch64 | RHEL 9, Oracle Linux 9 (ARM64) |
 | **RPM (el10)** | x86_64 | RHEL 10, Oracle Linux 10 |
+| **RPM (el10)** | aarch64 | RHEL 10, Oracle Linux 10 (ARM64) |
 | **APK** | x86_64 | Alpine Linux 3.18, 3.19, 3.20 |
+| **APK** | aarch64 | Alpine Linux 3.18+ (ARM64) |
 | **DEB** | amd64 | Debian 11 (Bullseye), Debian 12 (Bookworm), Ubuntu 22.04, Ubuntu 24.04 |
+| **DEB** | arm64 | Debian 11+, Ubuntu 22.04+ (ARM64) |
 
 After downloading, follow the [Package Installation](../installation/) guide for step-by-step setup instructions.
 
