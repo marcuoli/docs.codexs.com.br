@@ -20,7 +20,8 @@ CodexDNS is available as native Linux packages (RPM, APK, DEB) and as Docker ima
 
 | Package | Architecture | Tested Distributions |
 |---------|-------------|----------------------|
-| **RPM** | x86_64 | RHEL 9+, Oracle Linux 9+, CentOS Stream 9, Fedora 38+ |
+| **RPM (el9)** | x86_64 | RHEL 9, Oracle Linux 9, CentOS Stream 9, Fedora 38+ |
+| **RPM (el10)** | x86_64 | RHEL 10, Oracle Linux 10 |
 | **APK** | x86_64 | Alpine Linux 3.18, 3.19, 3.20 |
 | **DEB** | amd64 | Debian 11 (Bullseye), Debian 12 (Bookworm), Ubuntu 22.04, Ubuntu 24.04 |
 
