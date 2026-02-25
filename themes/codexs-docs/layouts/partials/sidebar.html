@@ -27,11 +27,15 @@
   {{ range $sectionPage.Pages.ByWeight }}
     {{ $page := . }}
     {{ if .IsSection }}
-      {{/* Section group with children */}}
+      {{ $hasChildren := gt (len .Pages) 0 }}
+      {{ if $hasChildren }}
+      {{/* Section group with children — title is a clickable link */}}
+      {{ $isSectionActive := eq $.RelPermalink .RelPermalink }}
       <div class="px-3 mt-2 mb-1">
-        <span class="text-xs font-semibold tracking-wider uppercase text-lt-text-muted dark:text-gh-muted">
+        <a href="{{ .RelPermalink }}"
+           class="text-xs font-semibold tracking-wider uppercase transition-colors {{ if $isSectionActive }}text-gh-primary dark:text-gh-accent{{ else }}text-lt-text-muted dark:text-gh-muted hover:text-gh-primary dark:hover:text-gh-accent{{ end }}">
           {{ .Title }}
-        </span>
+        </a>
       </div>
       {{ range .Pages.ByWeight }}
         {{ $isActive := eq $.RelPermalink .RelPermalink }}
@@ -39,6 +43,14 @@
            class="mx-2 px-3 py-1.5 rounded-md text-sm transition-colors {{ if $isActive }}bg-gh-primary text-white font-medium{{ else }}text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light{{ end }}">
           {{ .Title }}
         </a>
+      {{ end }}
+      {{ else }}
+      {{/* Section with no children — render as a regular nav link */}}
+      {{ $isActive := eq $.RelPermalink .RelPermalink }}
+      <a href="{{ .RelPermalink }}"
+         class="mx-2 px-3 py-1.5 rounded-md text-sm transition-colors {{ if $isActive }}bg-gh-primary text-white font-medium{{ else }}text-lt-text dark:text-gh-muted hover:bg-lt-bg-tertiary dark:hover:bg-gh-canvas-subtle hover:text-lt-text dark:hover:text-gh-light{{ end }}">
+        {{ .Title }}
+      </a>
       {{ end }}
     {{ else }}
       {{/* Regular page */}}
