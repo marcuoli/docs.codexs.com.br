@@ -1,5 +1,25 @@
 {
-  "latest": "",
-  "updated": "",
-  "releases": []
+  "latest": "0.5.20260225.7",
+  "updated": "2026-02-25",
+  "releases": [
+    {
+      "version": "0.5.20260225.7",
+      "release_date": "2026-02-25",
+      "rpm": {
+        "filename": "codexdns-0.5.20260225.7-1.el9.x86_64.rpm",
+        "url": "https://docs.codexs.com.br/codexdns/packages/codexdns-0.5.20260225.7-1.el9.x86_64.rpm",
+        "sha256": "be19f8bfe97d1bb7e9507b95623e94138b389e889bf44d97833a39e27fcf3f4d"
+      },
+      "apk": {
+        "filename": "codexdns-0.5.20260225.7-r1.apk",
+        "url": "https://docs.codexs.com.br/codexdns/packages/codexdns-0.5.20260225.7-r1.apk",
+        "sha256": "0ae8c97df35f3df6d41f7ccb23aa308f18db523ce6f543345ca0b64309c2b568"
+      },
+      "deb": {
+        "filename": "codexdns_0.5.20260225.7-1_amd64.deb",
+        "url": "https://docs.codexs.com.br/codexdns/packages/codexdns_0.5.20260225.7-1_amd64.deb",
+        "sha256": "701c967992fef0b493ed20b165d9d77ccbae670f336df0c128eaeaef67add2f4"
+      }
+    }
+  ]
 }
