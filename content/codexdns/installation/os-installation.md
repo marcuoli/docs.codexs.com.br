@@ -8,6 +8,8 @@ weight: 10
 
 CodexDNS ships as native Linux packages for Alpine, RPM-based, and Debian-based systems. This is the recommended installation method for bare-metal servers, VMs, and cloud instances.
 
+> **Download packages directly** from the [Downloads page](../../downloads/) — RPM, APK, and DEB files with SHA256 checksums are available there without any account or authentication required.
+
 ---
 
 ## System Requirements
@@ -34,40 +36,43 @@ CodexDNS ships as native Linux packages for Alpine, RPM-based, and Debian-based 
 ### Alpine Linux (APK)
 
 ```bash
-# Download the latest APK from GitHub Releases
-LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
-  | grep '"tag_name"' | cut -d'"' -f4)
+# Fetch latest package info from the downloads manifest
+PKGINFO=$(curl -s https://docs.codexs.com.br/codexdns/packages.json)
+APK_FILE=$(echo "$PKGINFO" | grep -o '"filename":"codexdns[^"]*\.apk"' | head -1 | cut -d'"' -f4)
 
-curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns_${LATEST#v}_x86_64.apk"
+# Download
+curl -LO "https://docs.codexs.com.br/codexdns/packages/$APK_FILE"
 
 # Install
-apk add --allow-untrusted codexdns_*.apk
+apk add --allow-untrusted "$APK_FILE"
 ```
 
 ### RHEL / Oracle Linux / CentOS / Fedora (RPM)
 
 ```bash
-# Download
-LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
-  | grep '"tag_name"' | cut -d'"' -f4)
+# Fetch latest package info from the downloads manifest
+PKGINFO=$(curl -s https://docs.codexs.com.br/codexdns/packages.json)
+RPM_FILE=$(echo "$PKGINFO" | grep -o '"filename":"codexdns[^"]*\.rpm"' | head -1 | cut -d'"' -f4)
 
-curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns-${LATEST#v}-1.x86_64.rpm"
+# Download
+curl -LO "https://docs.codexs.com.br/codexdns/packages/$RPM_FILE"
 
 # Install
-dnf install -y ./codexdns-*.x86_64.rpm
+dnf install -y "./$RPM_FILE"
 ```
 
 ### Debian / Ubuntu (DEB)
 
 ```bash
-# Download
-LATEST=$(curl -s https://api.github.com/repos/marcuoli/codexdns/releases/latest \
-  | grep '"tag_name"' | cut -d'"' -f4)
+# Fetch latest package info from the downloads manifest
+PKGINFO=$(curl -s https://docs.codexs.com.br/codexdns/packages.json)
+DEB_FILE=$(echo "$PKGINFO" | grep -o '"filename":"codexdns[^"]*\.deb"' | head -1 | cut -d'"' -f4)
 
-curl -LO "https://github.com/marcuoli/codexdns/releases/download/${LATEST}/codexdns_${LATEST#v}_amd64.deb"
+# Download
+curl -LO "https://docs.codexs.com.br/codexdns/packages/$DEB_FILE"
 
 # Install
-apt install -y ./codexdns_*_amd64.deb
+apt install -y "./$DEB_FILE"
 ```
 
 ---
