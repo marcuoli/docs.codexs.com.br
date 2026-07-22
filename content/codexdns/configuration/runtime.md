@@ -12,7 +12,7 @@ CodexDNS supports runtime configuration changes without requiring application re
 
 ### Priority Order
 
-1. **Configuration File** (`config.json`)
+1. **Configuration File** (`config.json`, `config-wsl.json`)
    - Read at application startup
    - Cannot be modified at runtime
    - Defines initial/default settings
@@ -42,7 +42,8 @@ CodexDNS supports runtime configuration changes without requiring application re
 
 Navigate to **Server Settings** page:
 - URL: `https://your-server.com/admin/server-settings`
-- Authentication: Must be logged in with an administrator account
+- Required Permission: `admin.users.manage`
+- Authentication: Must be logged in
 
 ### Tabs
 
@@ -383,6 +384,7 @@ sqlite3 codexdns.db < settings_backup.sql
 **Solution**:
 - Settings are persisted in database and should survive restarts
 - Check database connectivity
+- Verify `server_settings` table exists and contains data
 - Check for errors in `/logs/http.log` during startup
 
 ### Permission Denied
@@ -396,5 +398,7 @@ sqlite3 codexdns.db < settings_backup.sql
 
 ## Additional Resources
 
-- [Multi-Protocol DNS Configuration](../dns/multi-protocol)
-- [HTTPS Web Server Configuration](../deployment/https)
+- [Multi-Protocol DNS Configuration](multi-protocol-dns.md)
+- [HTTPS Web Server Configuration](https-web-server.md)
+- [Certificate Management](../README.md#certificates)
+- [API Documentation](../README.md#api)

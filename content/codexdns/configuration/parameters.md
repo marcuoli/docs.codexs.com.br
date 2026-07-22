@@ -159,15 +159,16 @@ Advanced parameters controlling DNS server concurrency, timeouts, and connection
 | `cache_enabled` | `bool` | `true` | `CODEXDNS_CACHE_ENABLED` | Enable DNS response caching |
 | `cache_backend` | `string` | `redis` | `CODEXDNS_CACHE_BACKEND` | Cache backend: `redis`, `memory`, or `none` |
 | `cache_forwarded_requests` | `bool` | `true` | `CODEXDNS_CACHE_FORWARDED_REQUESTS` | Cache forwarded (non-authoritative) query responses |
-| `cache_ttl` | `int` | `300` | `CODEXDNS_CACHE_TTL` | Default TTL (s) for cached entries (1–86400) |
-| `cache_negative_ttl` | `int` | `60` | `CODEXDNS_CACHE_NEGATIVE_TTL` | TTL (s) for NXDOMAIN and empty responses (0 = use `cache_ttl`) |
-| `cache_max_size` | `int` | `10000` | `CODEXDNS_CACHE_MAX_SIZE` | Maximum number of cached entries |
+| `cache_ttl` | `int` | `300` | `CODEXDNS_CACHE_TTL` | Maximum cached lifetime in seconds; DNS RR TTLs can shorten it (1–86400) |
+| `cache_negative_ttl` | `int` | `60` | `CODEXDNS_CACHE_NEGATIVE_TTL` | Maximum RFC 2308 SOA-based lifetime for NXDOMAIN/NODATA (0 = use `cache_ttl`) |
+| `cache_max_size` | `int` | `10000` | `CODEXDNS_CACHE_MAX_SIZE` | Maximum entries enforced by the `memory` backend; not enforced for Redis |
 | `cache_memory_max_mb` | `int` | `100` | `CODEXDNS_CACHE_MEMORY_MAX_MB` | Maximum memory (MB) for the `memory` cache backend |
-| `cache_eviction_policy` | `string` | `allkeys-lru` | `CODEXDNS_CACHE_EVICTION_POLICY` | Redis eviction policy when memory limit is reached. Options: `allkeys-lru`, `allkeys-lfu`, `allkeys-random`, `volatile-lru`, `volatile-lfu`, `volatile-random`, `volatile-ttl`, `noeviction` |
-| `cache_local_lru_enabled` | `bool` | `true` | `CODEXDNS_CACHE_LOCAL_LRU_ENABLED` | Enable in-process LRU layer to short-circuit Redis for hot keys |
+| `cache_eviction_policy` | `string` | `allkeys-lru` | `CODEXDNS_CACHE_EVICTION_POLICY` | Legacy compatibility value only. CodexDNS does not mutate server-global Redis policy; configure Redis memory and eviction externally |
+| `cache_local_lru_enabled` | `bool` | `true` | `CODEXDNS_CACHE_LOCAL_LRU_ENABLED` | Enable the bounded in-process L1 in front of Redis; ignored for the `memory` backend |
 | `cache_local_lru_max_entries` | `int` | `2048` | `CODEXDNS_CACHE_LOCAL_LRU_MAX_ENTRIES` | Maximum entries in the in-process LRU cache |
 | `cache_local_lru_ttl` | `int` | `5` | `CODEXDNS_CACHE_LOCAL_LRU_TTL` | TTL (s) for in-process LRU entries (1–3600) |
 | `cache_redis_dial_timeout_ms` | `int` | `2000` | `CODEXDNS_CACHE_REDIS_DIAL_TIMEOUT_MS` | Redis connection dial timeout (ms) (100–10000) |
+| — | `string` | host name | `CODEXDNS_CACHE_NAMESPACE` | Redis tenant/instance namespace. Set a unique value when instances share a Redis database; CodexDNS adds schema and process-lifetime isolation prefixes automatically |
 | `cache_redis_read_timeout_ms` | `int` | `1000` | `CODEXDNS_CACHE_REDIS_READ_TIMEOUT_MS` | Redis read timeout (ms) (100–10000) |
 | `cache_redis_write_timeout_ms` | `int` | `1000` | `CODEXDNS_CACHE_REDIS_WRITE_TIMEOUT_MS` | Redis write timeout (ms) (100–10000) |
 | `cache_warmup_enabled` | `bool` | `true` | `CODEXDNS_CACHE_WARMUP_ENABLED` | Pre-populate the cache on startup from most-queried domains |
