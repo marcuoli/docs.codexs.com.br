@@ -86,23 +86,16 @@ rm -f "$OUTPUT_DIR"/codexdns_*.deb    # ← Clean old packages
 ```
 **Status:** ✅ Fully aligned with APK baseline
 
-#### RPM (RHEL/Fedora) ❌
+#### RPM (RHEL/Fedora) ✅
 ```bash
 # tools/packaging/build-rpm.sh
 OUTPUT_DIR="/mnt/i/temp/codexdns/rpm"
 mkdir -p "$OUTPUT_DIR"
-# ❌ Missing cleanup of old RPM files
+# Remove a previous build of the same version, distribution, and architecture
+rm -f "$OUTPUT_DIR"/codexdns-*."${DIST_TAG}".${RPM_ARCH}.rpm
+rm -f "$OUTPUT_DIR"/codexdns-*."${DIST_TAG}".src.rpm
 ```
-
-**Required Fix:**
-```bash
-OUTPUT_DIR="/mnt/i/temp/codexdns/rpm"
-mkdir -p "$OUTPUT_DIR"
-
-# Clean old RPM files before copying new ones
-rm -f "$OUTPUT_DIR"/codexdns-*.rpm
-rm -f "$OUTPUT_DIR"/codexdns-*.src.rpm
-```
+**Status:** ✅ Uses targeted cleanup while retaining packages for other versions, distributions, and architectures
 
 ---
 
@@ -272,7 +265,7 @@ systemctl start %{name}.service >/dev/null 2>&1 || true
 
 ## Summary of Required Fixes
 
-### RPM Packaging Needs 3 Fixes:
+### RPM Packaging Needs 2 Fixes:
 
 1. **Add missing dependencies to `codexdns.spec`:**
    ```spec
@@ -282,14 +275,7 @@ systemctl start %{name}.service >/dev/null 2>&1 || true
    Requires:       chrony
    ```
 
-2. **Add cleanup to `build-rpm.sh` before copying packages:**
-   ```bash
-   # Clean old RPM files before copying new ones
-   rm -f "$OUTPUT_DIR"/codexdns-*.rpm
-   rm -f "$OUTPUT_DIR"/codexdns-*.src.rpm
-   ```
-
-3. **Add chrony enablement to `codexdns.spec` %post section:**
+2. **Add chrony enablement to `codexdns.spec` %post section:**
    ```spec
    # Enable chrony service for NTP time synchronization
    systemctl enable chronyd >/dev/null 2>&1 || true
