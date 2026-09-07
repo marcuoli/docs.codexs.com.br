@@ -91,11 +91,11 @@ rm -f "$OUTPUT_DIR"/codexdns_*.deb    # ← Clean old packages
 # tools/packaging/build-rpm.sh
 OUTPUT_DIR="/mnt/i/temp/codexdns/rpm"
 mkdir -p "$OUTPUT_DIR"
-# Remove a previous build of the same version, distribution, and architecture
+# Remove previous builds for the current distribution and architecture
 rm -f "$OUTPUT_DIR"/codexdns-*."${DIST_TAG}".${RPM_ARCH}.rpm
 rm -f "$OUTPUT_DIR"/codexdns-*."${DIST_TAG}".src.rpm
 ```
-**Status:** ✅ Uses targeted cleanup while retaining packages for other versions, distributions, and architectures
+**Status:** ✅ Replaces prior versions for the current target while retaining packages for other distributions and binary architectures
 
 ---
 
@@ -294,7 +294,6 @@ All Alpine improvements have been successfully applied to DEB packaging.
 
 1. **HIGH:** RPM dependencies (tzdata, chrony) - Affects runtime functionality
 2. **HIGH:** RPM chrony enablement - Affects time synchronization
-3. **MEDIUM:** RPM build script cleanup - Quality of life, prevents confusion
 
 ---
 
