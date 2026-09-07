@@ -72,7 +72,7 @@ Requires:       chrony
 #### APK (Alpine) - BASELINE ✅
 ```bash
 # tools/packaging/alpine/build-apk.sh
-OUTPUT_DIR="/mnt/f/temp/codexdns/apk"
+OUTPUT_DIR="/mnt/i/temp/codexdns/apk"
 mkdir -p "$OUTPUT_DIR"
 rm -f "$OUTPUT_DIR"/codexdns-*.apk    # ← Clean old packages
 ```
@@ -80,7 +80,7 @@ rm -f "$OUTPUT_DIR"/codexdns-*.apk    # ← Clean old packages
 #### DEB (Debian/Ubuntu) ✅
 ```bash
 # tools/packaging/debian/build-deb.sh
-OUTPUT_DIR="/mnt/f/temp/codexdns/deb"
+OUTPUT_DIR="/mnt/i/temp/codexdns/deb"
 mkdir -p "$OUTPUT_DIR"
 rm -f "$OUTPUT_DIR"/codexdns_*.deb    # ← Clean old packages
 ```
@@ -89,14 +89,14 @@ rm -f "$OUTPUT_DIR"/codexdns_*.deb    # ← Clean old packages
 #### RPM (RHEL/Fedora) ❌
 ```bash
 # tools/packaging/build-rpm.sh
-OUTPUT_DIR="/mnt/f/temp/codexdns/rpm"
+OUTPUT_DIR="/mnt/i/temp/codexdns/rpm"
 mkdir -p "$OUTPUT_DIR"
 # ❌ Missing cleanup of old RPM files
 ```
 
 **Required Fix:**
 ```bash
-OUTPUT_DIR="/mnt/f/temp/codexdns/rpm"
+OUTPUT_DIR="/mnt/i/temp/codexdns/rpm"
 mkdir -p "$OUTPUT_DIR"
 
 # Clean old RPM files before copying new ones
