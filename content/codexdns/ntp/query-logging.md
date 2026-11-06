@@ -10,6 +10,8 @@ weight: 20
 
 CodexDNS separates NTP logging into two distinct logs to provide better visibility into NTP server operations and individual client requests.
 
+Dashboard counters and database-backed history update asynchronously. From version 0.5.20261106.1, request-event subscription is established before the UDP listener starts, so early events can be buffered while the background consumer starts. See [NTP configuration and validation](../integration/) for a query-only client check and host-clock requirements.
+
 ## Log Files
 
 ### 1. NTP Server Log (`ntp_log_path`)
@@ -21,16 +23,13 @@ CodexDNS separates NTP logging into two distinct logs to provide better visibili
 **Contains**:
 - Server start/stop events
 - Configuration changes
-- Time synchronization events
 - Server errors and warnings
 - General operational messages
 
 **Example entries**:
 ```
 2025/01/25 10:30:15 [INFO] [NTP] NTP server started on 0.0.0.0:123
-2025/01/25 10:30:16 [INFO] [NTP] Time synchronized with upstream server pool.ntp.org
 2025/01/25 10:35:22 [INFO] [NTP] Request from 192.168.1.100 version=4 mode=3
-2025/01/25 10:40:45 [ERROR] [NTP] Failed to sync with upstream: connection timeout
 ```
 
 ### 2. NTP Query Log (`ntp_query_log_path`)
